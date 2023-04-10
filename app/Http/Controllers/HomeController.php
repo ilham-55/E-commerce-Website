@@ -12,19 +12,39 @@ class HomeController extends Controller
     {
         return view('home.userpage');
     }
+
+
+    // public function adminHome(){
+
+    //     return 'pk';
+    //     return view('admin.dashboard');
+    // }
+
+
     public function redirect()
     {
-        $usertype=Auth::user()->usertype;
 
-        if($usertype=='1')
+
+
+        if (Auth::check()) {
+
+
+        if(Auth::user()->usertype =='1')
         {
-            return view('admin.home');
+            return view('admin.dashboard');
+            // return  redirect()->route('admin.dashboard');
         }
 
         else
         {
         return view('home.userpage');
-        
-    }
+
+        }
+        }else {
+            return  redirect()->route('login');
+         }
+
+
+
 }
 }

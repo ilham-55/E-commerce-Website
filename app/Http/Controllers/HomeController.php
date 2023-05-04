@@ -36,8 +36,33 @@ class HomeController extends Controller
 
 
         if(Auth::user()->usertype =='1')
+
         {
-            return view('admin.dashboard');
+            $total_product=product::all()->count();
+
+            $total_order=order::all()->count();
+
+            $total_user=user::all()->count();
+
+            $order=order::all();
+
+            $total_revenue=0;
+
+            foreach($order as $order)
+
+            {
+                $total_revenue=$total_revenue + $order->price;
+            }
+
+            $total_delivered=order::where('delivery_status','=','delivered')->
+            get()->count();
+
+            $total_processing=order::where('delivery_status','=','processing')->
+            get()->count();
+
+            return view('admin.home',compact('total_product','total_order',
+            'total_user', 'total_revenue','total_delivered','total_processing'));
+
             // return  redirect()->route('admin.dashboard');
         }
 
@@ -210,6 +235,37 @@ public function stripePost(Request $request,$totalprice)
         Session::flash('success', 'Payment successful!');
 
         return back();
+    }
+
+    public function show_order()
+    {
+        if(Auth::id())
+        {
+            $user=Auth::user();
+
+            $userid=$user->id;
+
+            $order=order::where('user_id','=',$userid)->get();
+            return view('home.order',compact('order'));
+        }
+
+        else
+
+        {
+            return redirect('login');
+        }
+
+    }
+
+    public function cancel_order($id)
+    {
+        $order=order::find($id);
+
+        $order->delivery_status='You canceled the order';
+
+        $order->save();
+
+        return redirect()->back();
     }
 
 }

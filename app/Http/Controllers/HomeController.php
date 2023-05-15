@@ -329,4 +329,19 @@ public function stripePost(Request $request,$totalprice)
         }
     }
 
+    public function product_search(Request $request)
+
+    {
+        $comment=Comment::orderby('id','desc')->get();
+
+        $reply=Reply::all();
+
+        $search_text=$request->search;
+
+        $product=Product::where('title','LIKE','%'.$search_text.'%')
+        ->orWhere('category','LIKE',$search_text)->paginate(3);
+
+        return view('home.userpage',compact('product','comment', 'reply'));
+    }
+
 }
